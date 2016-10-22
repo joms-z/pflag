@@ -28,13 +28,17 @@ app.post('/register', function (req, res) {
 	var username = req.body.username;
 	var password = req.body.password; //TODO: Salt and store it encrypted
 	var firstName = req.body.firstName;
+	var isMentor = req.body.isMentor;
+	var isOnline = true;
 
 	var collection = db.get('usertable');
 
 	collection.insert({
 		"username": username,
 		"password": password,
-		"firstName": firstName
+		"firstName": firstName,
+		"isMentor": isMentor,
+		"isOnline": isOnline
 	}, function (err, next) {
 		if (err) {
 			res.send("Error creating account");
