@@ -6,22 +6,10 @@
         </div>
         <hr/>
         <ul class="messages list-unstyled">
-            <li class="message left appeared">
+            <li ng-class={'left': msg.messageFrom == currentUser} class="message appeared" ng-repeat="msg in historicalChats">
                 <div class="avatar"></div>
                 <div class="text_wrapper">
-                    <div class="text">Bleh!</div>
-                </div>
-            </li>
-            <li class="message right appeared">
-                <div class="avatar"></div>
-                <div class="text_wrapper">
-                    <div class="text">Bleh2</div>
-                </div>
-            </li>
-            <li class="message left appeared">
-                <div class="avatar"></div>
-                <div class="text_wrapper">
-                    <div class="text">More.</div>
+                    <div class="text">{{ msg.message }}</div>
                 </div>
             </li>
         </ul>
