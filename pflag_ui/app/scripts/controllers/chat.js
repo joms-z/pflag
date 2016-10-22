@@ -10,6 +10,7 @@
 angular.module('pflagUiApp')
   .controller('ChatCtrl', ['$scope', '$http', function ($scope, $http) {
 		$scope.historicalChats = [];
+		$scope.currentUser = "t12useron";
 		(function () {
 			$http.get('/loadChats').success(function (data, status) {
     		console.log('Logged in successfully');

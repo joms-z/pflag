@@ -6,7 +6,7 @@
         </div>
         <hr/>
         <ul class="messages list-unstyled">
-            <li ng-class={'left': msg.messageFrom == currentUser} class="message appeared" ng-repeat="msg in historicalChats">
+            <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.messageFrom == currentUser}">
                 <div class="avatar"></div>
                 <div class="text_wrapper">
                     <div class="text">{{ msg.message }}</div>
