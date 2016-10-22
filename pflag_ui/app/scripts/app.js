@@ -79,6 +79,11 @@ angular
         controller: 'CategoryCtrl',
         controllerAs: 'category'
       })
+      .when('/call', {
+        templateUrl: 'views/call.html',
+        controller: 'CallCtrl',
+        controllerAs: 'call'
+      })
 
       .otherwise({
         redirectTo: '/'

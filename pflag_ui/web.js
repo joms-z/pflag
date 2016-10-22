@@ -4,6 +4,7 @@ var app = express();
 var mongo = require('mongodb');
 var monk = require('monk');
 var db = monk('localhost:27017/nodetest1');
+var client = require('twilio')('SKb4e44aff7b2dbdd3b365540ff6e6de07', 'y3cm6mRo08WYelAYZXCU8Dn3DPA8Jzxg');
 
 app.use(bodyParser.urlencoded({extended: false }));
 app.use(bodyParser.json());
@@ -21,6 +22,27 @@ app.post('/login', function (req, res) {
 
   res.end("sent");
 
+});
+
+app.post('/call',function(req,res) {
+	
+	client.makeCall({
+
+		to:'+14166185534', // Any number Twilio can call
+		from: '+16475034795', // A number you bought from Twilio and can use for outbound communication
+		url: '/call/app1' // A URL that produces an XML document (TwiML) which contains instructions for the call
+
+	}, function(err, responseData) {
+
+		//executed when the call has been initiated.
+		console.log(responseData.from); // outputs "+14506667788"
+
+	});
+});
+
+app.get('/call/app1',function(req,res){
+	res.set('Content-Type', 'text/xml');
+	res.send(xml('<Response><Message>Hello from Pato!</Message></Response>'));
 });
 
 app.post('/sendChat', function (req, res) {
