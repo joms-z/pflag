@@ -8,7 +8,7 @@
  * Controller of the pflagUiApp
  */
 angular.module('pflagUiApp')
-  .controller('InitCtrl', [$scope, $location, function ($scope, $location) {
+  .controller('InitCtrl', ['$scope', '$location', function ($scope, $location) {
   		$scope.goToLogin = function () {
   			$location.path('/login');
   		};
