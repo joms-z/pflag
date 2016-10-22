@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name pflagUiApp.controller:AboutCtrl
+ * @name pflagUiApp.controller:NoOneCtrl
  * @description
- * # AboutCtrl
+ * # NoOneCtrl
  * Controller of the pflagUiApp
  */
 angular.module('pflagUiApp')
-  .controller('AboutCtrl', function () {
+  .controller('NoOneCtrl', function () {
     this.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
