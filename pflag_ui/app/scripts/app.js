@@ -77,4 +77,8 @@ angular
       .otherwise({
         redirectTo: '/'
       });
-  });
+  })
+  .controller('PFlagCtrl', [ '$scope', '$location', function ($scope, $location) {
+    
+  }
+]);
