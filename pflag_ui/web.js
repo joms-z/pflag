@@ -18,10 +18,30 @@ app.use(function(req,res,next){
 
 app.post('/login', function (req, res) {
   var username = req.body.username;
-  var password = req.body.password;
+  var password = req.body.password; //TODO: Encryption
 
   res.end("sent");
 
+});
+
+app.post('/register', function (req, res) {
+	var username = req.body.username;
+	var password = req.body.password; //TODO: Salt and store it encrypted
+	var firstName = req.body.firstName;
+
+	var collection = db.get('usertable');
+
+	collection.insert({
+		"username": username,
+		"password": password,
+		"firstName": firstName
+	}, function (err, next) {
+		if (err) {
+			res.send("Error creating account");
+		} else {
+			res.send("Account created successfully");
+		}
+	});
 });
 
 app.post('/call',function(req,res) {
