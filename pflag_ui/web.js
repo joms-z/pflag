@@ -19,7 +19,7 @@ app.use(function(req,res,next){
 app.post('/login', function (req, res) {
   var username = req.body.username;
   var password = req.body.password; //TODO: Encryption
-
+  //TODO: Retrieve data and validate
   res.end("sent");
 
 });
