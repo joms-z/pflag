@@ -8,6 +8,10 @@
  * Controller of the pflagUiApp
  */
 angular.module('pflagUiApp')
-  .controller('TryingCtrl', function () {
-    
-  });
+  .controller('TryingCtrl',['$location', '$timeout', function ($location, $timeout) {
+    (function () {
+        $timeout(function() {
+            $location.path('/no_one');
+        }, 3000);
+    })();
+  }]);
