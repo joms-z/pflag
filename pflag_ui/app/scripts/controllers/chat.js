@@ -15,7 +15,7 @@ function poll(fn, timeout, interval) {
     interval = interval || 100;
 
     (function p() {
-            // If the condition is met, we're done! 
+            // If the condition is met, we're done!
             if(fn()) {
                 dfd.resolve();
             }
@@ -36,11 +36,10 @@ angular.module('pflagUiApp')
   .controller('ChatCtrl', ['$scope', '$http', '$document', function ($scope, $http, $document) {
     $scope.waitingForMentor = true;
 		var socketio = null;
-		$scope.name = prompt("Your name?");
-		var nameLower = ($scope.name) ? $scope.name.toLowerCase() : null;
+		$scope.name = $scope.$parent.username;
 		$scope.isVolunteer = false;
 
-		if( nameLower == "doe" || nameLower == "jackie" || nameLower == "joms" || nameLower == "christine" || nameLower == "arvind" || nameLower == "pato" || nameLower == "pi" ){
+		if( $scope.$parent.isMentor ){
 			$scope.isVolunteer = true;
 			var waitingForClient = true;
 			socketio = io.connect("localhost:5000", {query: 'v='+1+'&name='+$scope.name});
@@ -56,8 +55,8 @@ angular.module('pflagUiApp')
 
 			socketio.on("isMatch", function(data) {
 				if(!data.isMatch){
-					setTimeout(function(){ 
-						socketio.emit("isMatch",{}); 
+					setTimeout(function(){
+						socketio.emit("isMatch",{});
 					}, 1000);
 				}else{
 					setWaitingForMentor(false);
@@ -80,7 +79,7 @@ angular.module('pflagUiApp')
     });
 
 		socketio.on("new_chat", function(data) {
-				$scope.historicalChats.push({ 
+				$scope.historicalChats.push({
 					message : data.with,
 					name: $scope.name,
 					simple: true
@@ -89,7 +88,7 @@ angular.module('pflagUiApp')
     });
 
 		socketio.on("disconnected", function(data) {
-				$scope.historicalChats.push({ 
+				$scope.historicalChats.push({
 					message : data.with,
 					name: $scope.name,
 					simple: true,
@@ -99,15 +98,15 @@ angular.module('pflagUiApp')
     });
 
 		$scope.submitMessage = function(){
-			socketio.emit("message", { 
+			socketio.emit("message", {
 				message : $scope.message,
 				name: $scope.name,
 			});
-			$scope.historicalChats.push({ 
+			$scope.historicalChats.push({
 				message : $scope.message,
 				name: $scope.name,
 			});
-			
+
 			$scope.message = "";
 			$scope.$digest();
 		}
