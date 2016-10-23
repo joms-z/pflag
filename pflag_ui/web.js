@@ -196,6 +196,7 @@ function findVolunteer(clientID){
 		if(session && session.socket && session.socket.connected){
 			createChatroom(volunteerID,clientID);
 			delete clientQueue[clientID];
+
 			return true;
 		}else{
 			deleteSession(volunteerID);
@@ -225,12 +226,15 @@ function deleteChatroom(SID, isVolunteer){
 	if(isVolunteer){
 		var volunteerSID = SID;
 		var clientSID = vcChatroom[volunteerSID];
+		sessions[clientSID].socket.emit("closed_window",{ with: sessions[volunteerSID].name });
+		respondSocket.emit("disconnected",{ message: data.message, successful: false, name: data.name });
 		delete vcChatroom[volunteerSID];
 		delete cvChatroom[clientSID];
 		delete volunteerQueue[volunteerSID];
 	}else{
 		var clientSID = SID;
 		var volunteerSID = cvChatroom[clientSID];
+		sessions[volunteerSID].socket.emit("disconnected",{ with: sessions[clientSID].name });
 		if(volunteerSID){
 			volunteerQueue[volunteerSID] = volunteerSID;
 		}
@@ -251,27 +255,29 @@ function deleteSession(SID){
 
 function printState(){
 	console.log("****");
-	console.log("Sessions", Object.keys(sessions));
+	console.log("Sessions:", Object.keys(sessions));
 	console.log("Volunteers queue:", volunteerQueue);
-	console.log("Clients queue", clientQueue);
-	console.log("Hashtable volunteers", vcChatroom);
-	console.log("Hashtable clients",cvChatroom);
+	console.log("Clients queue:", clientQueue);
+	console.log("Hashtable volunteers:", vcChatroom);
+	console.log("Hashtable clients:",cvChatroom);
 	console.log("**");
 }
 
 io.sockets.on('connection', function(socket) {
 	var isVolunteer = socket.handshake.query.v;
-
+	var name = socket.handshake.query.name;
 	if(isVolunteer == '1'){
 		sessions[socket.id] = {
 			socket: socket,
 			isVolunteer: true,// 1 = volunteer, 0: client
+			name: name
 		};
 		volunteerQueue[socket.id] = socket.id;
 	}else{
 		sessions[socket.id] = {
 			socket: socket,
 			isVolunteer: false,// 1 = volunteer, 0: client
+			name: name
 		};
 		clientQueue[socket.id] = socket.id;
 	}
@@ -292,7 +298,13 @@ io.sockets.on('connection', function(socket) {
     });
 
 	socket.on('isMatch', function(data){
-		socket.emit('isMatch', { isMatch: findVolunteer(socket.id) });
+		var matched = findVolunteer(socket.id);
+		if(matched){
+			var volunteerSID = cvChatroom[socket.id];
+			socket.emit("new_chat",{ with: sessions[volunteerSID].name });
+			sessions[volunteerSID].socket.emit("new_chat",{ with: data.name });
+		}
+		socket.emit('isMatch', { isMatch: matched });
 		printState();
 	});
 });
