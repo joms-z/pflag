@@ -4,16 +4,20 @@
 <div class="container-fluid" ng-hide="waitingForMentor">
     <div id="chat-box" class="container">
         <div class="head">
-            <div class="pull-left" ng-show="name"><b><em>{{ name }}</em></b></div>
+            <div class="pull-left" ng-show="name"><b><em>{{ name }}</em></b> <span ng-show="isVolunteer" style="font-size: 0.7em">&nbsp;&nbsp;[volunteer]</span></div>
             <div class="pull-right text-success">&middot; online</div>
         </div>
         <hr/>
         <ul class="messages list-unstyled">
-            <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.name == name, 'right' : msg.name !=name}">
+            <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.name == name, 'right' : msg.name !=name, 'new-chat': msg.simple}">
                 <div class="avatar"><div class="avatar-string">{{msg.name}}</div></div>
                 <div class="text_wrapper">
                     <div class="text">{{ msg.message }}</div>
                 </div>
+                </span>
+                <span ng-if="msg.simple">
+                    - Welcome! You are now connected to <b>{{ msg.message }}</b> -
+                <span>
             </li>
         </ul>
     </div>
