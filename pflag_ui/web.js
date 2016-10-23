@@ -29,10 +29,11 @@ app.post('/login', function (req, res) {
   var collection = db.get('usertable');
   //TODO: Enforce constraint of only one user with one username
   collection.findOne({"username": username, "password": password}, function(err, userdetails) {
-  	if(err) {
-	  res.end("Login failed!");
+  	console.log(userdetails, username, password);
+  	if(err || userdetails === null) {
+	  res.status(401).end("Login failed!");
   	} else {
-      res.json({ isMentor: userdetails["isMentor"] });
+      res.json(userdetails);
   	}
 	});
 });
@@ -50,11 +51,14 @@ app.post('/register', function (req, res) {
 		"password": password,
 		"isMentor": isMentor,
 		"isOnline": isOnline,
-		"bio": "",
-		"isParent": false,
-		"isLgbtq": false,
-		"isYouth": false
+		"profile": {
+			"bio": "",
+			"isParent": false,
+			"isLgbtq": false,
+			"isYouth": false
+		}
 	}, function (err, next) {
+		console.log(next);
 		if (err) {
 			res.end("Error creating account");
 		} else {
@@ -68,37 +72,28 @@ app.post('/request-mentor', function (req, res) {
 	//TODO: Retrieve data and validate
 	var collection = db.get('usertable');
 
-	collection.findOneAndUpdate({ "username": username }, { "isMentor": true }, function(err, next) {
+	collection.findOneAndUpdate({ "username": username }, { $set: { "isMentor": true } }, function(err, next) {
 		if(err) {
-			res.json("Failed to become a mentor.");
+			res.end("Failed to become a mentor.");
 		} else {
-			res.json("successfully became a mentor");
+			res.end("successfully became a mentor");
 		}
 	});
 });
 
 app.post('/save-profile', function (req, res) {
-	// var username = req.body.username;
-	// var password = req.body.password; //TODO: Salt and store it encrypted
-	// var firstName = req.body.firstName;
-	// var isMentor = req.body.isMentor;
-	// var isOnline = true;
+	var username = req.body.username;
+	var profile = req.body.profile;
+	//TODO: Retrieve data and validate
+	var collection = db.get('usertable');
 
-	// var collection = db.get('usertable');
-
-	// collection.insert({
-	// 	"username": username,
-	// 	"password": password,
-	// 	"firstName": firstName,
-	// 	"isMentor": isMentor,
-	// 	"isOnline": isOnline
-	// }, function (err, next) {
-	// 	if (err) {
-	// 		res.send("Error creating account");
-	// 	} else {
-	// 		res.send("Account created successfully");
-	// 	}
-	// });
+	collection.findOneAndUpdate({ "username": username }, { $set: { "profile": profile } }, function(err, next) {
+		if(err) {
+			res.end("Failed to update profile.");
+		} else {
+			res.end("Successfully updated profile");
+		}
+	});
 });
 
 app.post('/call',function(req,res) {

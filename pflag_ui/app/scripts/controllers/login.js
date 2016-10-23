@@ -24,8 +24,13 @@ angular.module('pflagUiApp')
 				console.log(data);
 				$location.path('/choose');
 				$scope.$parent.isLoggedIn = true;
-				$scope.$parent.isMentor = data.isMentor;
 				$scope.$parent.username = $scope.username;
+				$scope.$parent.isMentor = data.isMentor;
+				$scope.$parent.profile = data.profile;
+				// $scope.$parent.profile.bio = data.bio;
+				// $scope.$parent.profile.isParent = data.isParent;
+				// $scope.$parent.profile.isLgbtq = data.isLgbtq;
+				// $scope.$parent.profile.isYouth = data.isYouth;
 			}).error(function (data, status) {
 				console.log('FAILED WITH DATA: ' + data + ' STATUS: ' + status);
 			});

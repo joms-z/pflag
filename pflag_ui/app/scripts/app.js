@@ -98,5 +98,11 @@ angular
     $scope.isMentor = false;
     $scope.isLoggedIn = false;
     $scope.username = 'anonymous';
-  }
-]);
+    $scope.profile = {
+    	bio: '',
+    	isParent: false,
+    	isLgbtq: false,
+    	isYouth: false
+    };
+
+}]);
