@@ -1,0 +1,25 @@
+<div class="container-fluid">
+    <div id="chat-box" class="container">
+        <div class="head">
+            <div class="pull-left"><b><em>Doe</em></b></div>
+            <div class="pull-right text-success">&middot; online</div>
+        </div>
+        <hr/>
+        <ul class="messages list-unstyled">
+            <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.messageFrom == currentUser}">
+                <div class="avatar"></div>
+                <div class="text_wrapper">
+                    <div class="text">{{ msg.message }}</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="container row">
+        <div class="col-xs-9">
+            <input ng-model="message" class="form-control message_input" placeholder="Type your message here..." />
+        </div>
+        <div class="col-xs-3">
+            <input type="button" href="#" ng-click="submitMessage()" class="btn btn-primary btn-block" value="Send" />
+        </div>
+    </div>
+</div>
