@@ -47,6 +47,9 @@
               <ul ng-if="!isLoggedIn" class="nav navbar-nav navbar-right">
                 <li><a href="#/login">Login</a></li>
               </ul>
+              <ul ng-if="isLoggedIn" class="nav navbar-nav navbar-right">
+                <li><a href="#/logout">Logout</a></li>
+              </ul>
             </div>
         </div>
       </div>

@@ -39,4 +39,8 @@ angular.module('pflagUiApp')
 			});
 		};
 
+    (function () {
+      $scope.$parent.isLoggedIn = false;
+    })();
+    
 	}]);

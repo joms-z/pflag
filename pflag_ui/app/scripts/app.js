@@ -39,6 +39,11 @@ angular
         controller: 'LoginCtrl',
         controllerAs: 'login'
       })
+      .when('/logout', {
+        templateUrl: 'views/login.html',
+        controller: 'LoginCtrl',
+        controllerAs: 'logout'
+      })
       .when('/message', {
         templateUrl: 'views/message.html',
         controller: 'MessageCtrl',

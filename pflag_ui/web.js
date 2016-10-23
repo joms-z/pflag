@@ -181,8 +181,46 @@ app.get('/loadChats', function (req, res) {
 	});
 });
 
+app.get('/getMessages', function (req, res) {
+	var db = req.db;
+	var collection = db.get('messages');
+	collection.find({}, function (err, messages) {
+		if (err || messages == null) {
+			res.status(401).end('Fetching messages failed');
+		} else {
+			res.json(messages);
+			collection.findOneAndUpdate({"isNew": true}, {$set: {"isNew": false}}, function (err, next) {
+				if (err) {
+					res.status(401).end("failed to update");
+				}
+			});
+		}
+	});
+});
 
+app.post('/messageTo', function (req, res) {
+	var message = req.body.message;
+	var phone = req.body.phone;
+	var email = req.body.email;
+	var dateSent = req.body.dateSent;
 
+	var db = req.db;
+	var collection = db.get('messages');
+
+	collection.insert({
+		"message": message,
+		"phone": phone,
+		"email": email,
+		"dateSent": dateSent,
+		"isNew": true
+	}, function (err, next) {
+		if (err) {
+			res.status(400).send('failed to store message');
+		} else {
+			res.send(204).send('message stored successfully');
+		}
+	});
+});
 
 
 var sessions = [];
