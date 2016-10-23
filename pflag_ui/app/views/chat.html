@@ -9,8 +9,8 @@
         </div>
         <hr/>
         <ul class="messages list-unstyled">
-            <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.name == name}">
-                <div class="avatar">{{msg.name}}:</div>
+            <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.name == name, 'right' : msg.name !=name}">
+                <div class="avatar">{{msg.name}}</div>
                 <div class="text_wrapper">
                     <div class="text">{{ msg.message }}</div>
                 </div>
