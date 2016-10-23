@@ -1,13 +1,16 @@
-<div class="container-fluid">
+
+<div ng-include src="'views/trying.html'" ng-show="waitingForMentor"></div>
+
+<div class="container-fluid" ng-hide="waitingForMentor">
     <div id="chat-box" class="container">
         <div class="head">
-            <div class="pull-left"><b><em>Doe</em></b></div>
+            <div class="pull-left" ng-show="name"><b><em>{{ name }}</em></b></div>
             <div class="pull-right text-success">&middot; online</div>
         </div>
         <hr/>
         <ul class="messages list-unstyled">
-            <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.messageFrom == currentUser}">
-                <div class="avatar"></div>
+            <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.name == name}">
+                <div class="avatar">{{msg.name}}:</div>
                 <div class="text_wrapper">
                     <div class="text">{{ msg.message }}</div>
                 </div>
@@ -15,11 +18,13 @@
         </ul>
     </div>
     <div class="container row">
-        <div class="col-xs-9">
-            <input ng-model="message" class="form-control message_input" placeholder="Type your message here..." />
-        </div>
-        <div class="col-xs-3">
-            <input type="button" href="#" ng-click="submitMessage()" class="btn btn-primary btn-block" value="Send" />
-        </div>
+        <form action="javascript:void(0);">
+            <div class="col-xs-9">
+                <input ng-model="message" class="form-control message_input" placeholder="Type your message here..." />
+            </div>
+            <div class="col-xs-3">
+                <input type="submit" ng-submit="submitMessage()" ng-click="submitMessage()" class="btn btn-primary btn-block" value="Send" />
+            </div>
+        </form>
     </div>
 </div>

@@ -7,19 +7,65 @@
  * # ChatCtrl
  * Controller of the pflagUiApp
  */
+
+// The polling function
+function poll(fn, timeout, interval) {
+    var dfd = new Deferred();
+    var endTime = Number(new Date()) + (timeout || 2000);
+    interval = interval || 100;
+
+    (function p() {
+            // If the condition is met, we're done! 
+            if(fn()) {
+                dfd.resolve();
+            }
+            // If the condition isn't met but the timeout hasn't elapsed, go again
+            else if (Number(new Date()) < endTime) {
+                setTimeout(p, interval);
+            }
+            // Didn't match and too much time, reject!
+            else {
+                dfd.reject(new Error('timed out for ' + fn + ': ' + arguments));
+            }
+    })();
+
+    return dfd.promise;
+}
+
 angular.module('pflagUiApp')
   .controller('ChatCtrl', ['$scope', '$http', function ($scope, $http) {
-    
+    $scope.waitingForMentor = true;
 		var socketio = null;
-		var mentor = confirm("mentor");
-		var name = "";
+		$scope.name = prompt("Your name?");
+		var nameLower = ($scope.name) ? $scope.name.toLowerCase() : null;
 
-		if(mentor){
+		if( nameLower == "doe" || nameLower == "jackie" || nameLower == "joms" || nameLower == "christine" || nameLower == "arvind" || nameLower == "pato" || nameLower == "pi" ){
 			var waitingForClient = true;
 			socketio = io.connect("localhost:5000", {query: 'v='+1});
+			$scope.waitingForMentor = false;
 		}else{
-			var waitingForMentor = false;
+			if(!$scope.name){
+				$scope.name = "A Cute Potato";
+			}
+
 			socketio = io.connect("localhost:5000", {query: 'v='+0});
+
+			socketio.emit("isMatch",{});
+
+			socketio.on("isMatch", function(data) {
+				if(!data.isMatch){
+					setTimeout(function(){ 
+						socketio.emit("isMatch",{}); 
+					}, 1000);
+				}else{
+					setWaitingForMentor(false);
+				}
+			});
+		}
+
+		function setWaitingForMentor(value){
+			$scope.waitingForMentor = value;
+			$scope.$digest();
 		}
 
 		if(socketio){
@@ -27,28 +73,23 @@ angular.module('pflagUiApp')
 		}
 
     socketio.on("message_received", function(data) {
-        console.log(data);
+        $scope.historicalChats.push(data);
+				$scope.$digest();
     });
 
 		$scope.submitMessage = function(){
 			socketio.emit("message", { 
 				message : $scope.message,
-				name: name,
+				name: $scope.name,
 			});
+			$scope.historicalChats.push({ 
+				message : $scope.message,
+				name: $scope.name,
+			});
+			
 			$scope.message = "";
+			$scope.$digest();
 		}
-		
+
 		$scope.historicalChats = [];
-		$scope.currentUser = "t12useron";
-		/*
-		(function () {
-			$http.get('/loadChats').success(function (data, status) {
-    		console.log('Logged in successfully');
-            $scope.historicalChats = data;
-            console.log("data");
-    	}).error(function (data, status) {
-    		console.log('FAILED WITH DATA: ' + data + ' STATUS: ' + status);
-    	});
-	})(); 
-	*/
   }]);
