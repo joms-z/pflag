@@ -50,7 +50,7 @@ angular.module('pflagUiApp')
 				$scope.name = "A Cute Potato";
 			}
 
-			socketio = io.connect("localhost:5000", {query: 'v='+0});
+			socketio = io.connect("localhost:5000", {query: 'v='+0+'&name='+$scope.name});
 
 			socketio.emit("isMatch",{ name:$scope.name });
 
@@ -84,6 +84,16 @@ angular.module('pflagUiApp')
 					message : data.with,
 					name: $scope.name,
 					simple: true
+				});
+				$scope.$digest();
+    });
+
+		socketio.on("disconnected", function(data) {
+				$scope.historicalChats.push({ 
+					message : data.with,
+					name: $scope.name,
+					simple: true,
+					disconnected: true
 				});
 				$scope.$digest();
     });

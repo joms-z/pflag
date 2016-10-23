@@ -183,12 +183,15 @@ function deleteChatroom(SID, isVolunteer){
 	if(isVolunteer){
 		var volunteerSID = SID;
 		var clientSID = vcChatroom[volunteerSID];
+		sessions[clientSID].socket.emit("closed_window",{ with: sessions[volunteerSID].name });
+		respondSocket.emit("disconnected",{ message: data.message, successful: false, name: data.name });
 		delete vcChatroom[volunteerSID];
 		delete cvChatroom[clientSID];
 		delete volunteerQueue[volunteerSID];
 	}else{
 		var clientSID = SID;
 		var volunteerSID = cvChatroom[clientSID];
+		sessions[volunteerSID].socket.emit("disconnected",{ with: sessions[clientSID].name });
 		if(volunteerSID){
 			volunteerQueue[volunteerSID] = volunteerSID;
 		}
