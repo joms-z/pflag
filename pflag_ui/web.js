@@ -134,6 +134,11 @@ var volunteerQueue = [];
 var clientQueue = [];
 
 function findVolunteer(clientID){
+	printState();
+	if(cvChatroom[clientID]){
+		return true;
+	}
+	
 	while(Object.keys(volunteerQueue).length > 0){
 		var volunteerID = Object.keys(volunteerQueue)[0];
 		delete volunteerQueue[volunteerID];
@@ -195,12 +200,12 @@ function deleteSession(SID){
 }
 
 function printState(){
-	console.log("**");
-	console.log("sessions", Object.keys(sessions));
-	console.log("v-queue", volunteerQueue);
-	console.log("c-queue", clientQueue);
-	console.log("vc", vcChatroom);
-	console.log("cv",cvChatroom);
+	console.log("****");
+	console.log("Sessions", Object.keys(sessions));
+	console.log("Volunteers queue:", volunteerQueue);
+	console.log("Clients queue", clientQueue);
+	console.log("Hashtable volunteers", vcChatroom);
+	console.log("Hashtable clients",cvChatroom);
 	console.log("**");
 }
 
@@ -219,12 +224,10 @@ io.sockets.on('connection', function(socket) {
 			isVolunteer: false,// 1 = volunteer, 0: client
 		};
 		clientQueue[socket.id] = socket.id;
-		var wasFound = findVolunteer(socket.id);
 	}
 
 	printState();
 	
-
 	socket.on('disconnect', function () {
 		console.log(socket.id + " disconnected");
 		deleteSession(socket.id);
@@ -232,10 +235,16 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('message', function(data) {
 		var session = sessions[socket.id];
-		var respondSocket = getRespondSocket(socket.id,session.isVolunteer);
-        respondSocket.emit("message_received",{ message: data });
-		console.log(data);
+		try{
+			var respondSocket = getRespondSocket(socket.id,session.isVolunteer);
+        	respondSocket.emit("message_received",{ message: data.message, successful: false, name: data.name });
+		}catch(e){}
     });
+
+	socket.on('isMatch', function(data){
+		socket.emit('isMatch', { isMatch: findVolunteer(socket.id) });
+		printState();
+	});
 });
 
 server.listen(process.env.PORT || 5000);
