@@ -1,6 +1,7 @@
 var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 var app = module.exports.app = express();
 var server = http.createServer(app)
 var io = require('socket.io').listen(server);
@@ -14,6 +15,8 @@ app.use(bodyParser.json());
 //app.use(cookieParser());
 app.use(express.static(__dirname + "/dist"));
 
+app.use(cors());
+
 app.use(function(req,res,next){
     req.db = db;
     next();
@@ -25,19 +28,18 @@ app.post('/login', function (req, res) {
   //TODO: Retrieve data and validate
   var collection = db.get('usertable');
   //TODO: Enforce constraint of only one user with one username
-  var userdetails = collection.findOne({"username": username, 
-                                        "password": password})
-  if (username===userdetails["username"] && password===userdetails["password"])
-      res.end("sent");
-  else
-	  res.send("Login failed!")
-
+  collection.findOne({"username": username, "password": password}, function(err, userdetails) {
+  	if(err) {
+	  res.end("Login failed!");
+  	} else {
+      res.json({ isMentor: userdetails["isMentor"] });
+  	}
+	});
 });
 
 app.post('/register', function (req, res) {
 	var username = req.body.username;
 	var password = req.body.password; //TODO: Salt and store it encrypted
-	var firstName = req.body.firstName;
 	var isMentor = req.body.isMentor;
 	var isOnline = true;
 
@@ -46,23 +48,64 @@ app.post('/register', function (req, res) {
 	collection.insert({
 		"username": username,
 		"password": password,
-		"firstName": firstName,
 		"isMentor": isMentor,
-		"isOnline": isOnline
+		"isOnline": isOnline,
+		"bio": "",
+		"isParent": false,
+		"isLgbtq": false,
+		"isYouth": false
 	}, function (err, next) {
 		if (err) {
-			res.send("Error creating account");
+			res.end("Error creating account");
 		} else {
-			res.send("Account created successfully");
+			res.end("Account created successfully");
 		}
 	});
+});
+
+app.post('/request-mentor', function (req, res) {
+	var username = req.body.username;
+	//TODO: Retrieve data and validate
+	var collection = db.get('usertable');
+
+	collection.findOneAndUpdate({ "username": username }, { "isMentor": true }, function(err, next) {
+		if(err) {
+			res.json("Failed to become a mentor.");
+		} else {
+			res.json("successfully became a mentor");
+		}
+	});
+});
+
+app.post('/save-profile', function (req, res) {
+	// var username = req.body.username;
+	// var password = req.body.password; //TODO: Salt and store it encrypted
+	// var firstName = req.body.firstName;
+	// var isMentor = req.body.isMentor;
+	// var isOnline = true;
+
+	// var collection = db.get('usertable');
+
+	// collection.insert({
+	// 	"username": username,
+	// 	"password": password,
+	// 	"firstName": firstName,
+	// 	"isMentor": isMentor,
+	// 	"isOnline": isOnline
+	// }, function (err, next) {
+	// 	if (err) {
+	// 		res.send("Error creating account");
+	// 	} else {
+	// 		res.send("Account created successfully");
+	// 	}
+	// });
 });
 
 app.post('/call',function(req,res) {
 	var call = {
 		fourPeople: 'https://handler.twilio.com/twiml/EH1c35e24a50f16aa314612dd11ac296d4' // Arvind, Joms, Jackie, Christine
 	};
-	
+
 	client.makeCall({
 
 		to:'+14166185534', // Any number Twilio can call
@@ -145,7 +188,7 @@ function findVolunteer(clientID){
 	if(cvChatroom[clientID]){
 		return true;
 	}
-	
+
 	while(Object.keys(volunteerQueue).length > 0){
 		var volunteerID = Object.keys(volunteerQueue)[0];
 		delete volunteerQueue[volunteerID];
@@ -218,7 +261,7 @@ function printState(){
 
 io.sockets.on('connection', function(socket) {
 	var isVolunteer = socket.handshake.query.v;
-	
+
 	if(isVolunteer == '1'){
 		sessions[socket.id] = {
 			socket: socket,
@@ -234,7 +277,7 @@ io.sockets.on('connection', function(socket) {
 	}
 
 	printState();
-	
+
 	socket.on('disconnect', function () {
 		console.log(socket.id + " disconnected");
 		deleteSession(socket.id);

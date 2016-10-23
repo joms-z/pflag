@@ -3,29 +3,29 @@
 		<div class="form-group">
 			<label for="inputBio" class="col-sm-2 control-label"><b>Bio</b></label>
 			<div class="col-sm-10">
-				<textarea type="text" class="form-control" id="inputBio" placeholder="Tell me something!"></textarea>
+				<textarea type="text" class="form-control" id="inputBio" placeholder="Tell me something!" ng-model="bio"></textarea>
 			</div>
 		</div>
 		<div class="form-group">
 			<label for="inputBio" class="col-sm-2 control-label"><b>Categories</b></label>
 			<div class="col-sm-10">
 				<label class="checkbox" for="checkbox1">
-					<input type="checkbox" data-toggle="checkbox" value="" id="checkbox1">
+					<input type="checkbox" data-toggle="checkbox" value="" id="checkbox1" ng-model="isParent">
 					Parent of an LGBTQ person
 				</label>
 				<label class="checkbox" for="checkbox2">
-					<input type="checkbox" data-toggle="checkbox" value="" id="checkbox2">
+					<input type="checkbox" data-toggle="checkbox" value="" id="checkbox2" ng-model="isLgbtq">
 					An LGBTQ person
 				</label>
 				<label class="checkbox" for="checkbox3">
-					<input type="checkbox" data-toggle="checkbox" value="" id="checkbox3">
+					<input type="checkbox" data-toggle="checkbox" value="" id="checkbox3" ng-model="isYouth">
 					Youth
 				</label>
 			</div>
 		</div>
 		<div class="form-group">
 			<div class="col-sm-offset-2 col-sm-10">
-				<button type="submit" class="btn btn-primary btn-block">Save</button>
+				<button type="submit" class="btn btn-primary btn-block" ng-click="save()">Save</button>
 			</div>
 		</div>
 	</form>

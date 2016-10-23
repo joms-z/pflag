@@ -95,6 +95,8 @@ angular
       });
   })
   .controller('PFlagCtrl', [ '$scope', '$location', function ($scope, $location) {
-    
+    $scope.isMentor = false;
+    $scope.isLoggedIn = false;
+    $scope.username = 'anonymous';
   }
 ]);
