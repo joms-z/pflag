@@ -22,11 +22,14 @@ angular.module('pflagUiApp')
 			$http.post('http://localhost:5000/login', data).success(function (data, status) {
 				console.log('Logged in successfully');
 				console.log(data);
-				$location.path('/choose');
 				$scope.$parent.isLoggedIn = true;
 				$scope.$parent.username = $scope.username;
 				$scope.$parent.isMentor = data.isMentor;
 				$scope.$parent.profile = data.profile;
+				if (data.isMentor)
+					$location.path('/msg');
+				else
+					$location.path('/choose');
 				// $scope.$parent.profile.bio = data.bio;
 				// $scope.$parent.profile.isParent = data.isParent;
 				// $scope.$parent.profile.isLgbtq = data.isLgbtq;

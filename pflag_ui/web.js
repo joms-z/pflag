@@ -96,6 +96,20 @@ app.post('/save-profile', function (req, res) {
 	});
 });
 
+app.get('/get-mentors', function (req, res) {
+	//TODO: Retrieve data and validate
+	var collection = db.get('usertable');
+	console.log('he')
+
+	collection.find({ "isMentor": true }, function(err, mentors) {
+		if(err) {
+			res.end("Failed to get mentors.");
+		} else {
+			res.json(mentors);
+		}
+	});
+});
+
 app.post('/call',function(req,res) {
 	var call = {
 		fourPeople: 'https://handler.twilio.com/twiml/EH1c35e24a50f16aa314612dd11ac296d4' // Arvind, Joms, Jackie, Christine

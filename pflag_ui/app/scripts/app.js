@@ -90,6 +90,11 @@ angular
         controllerAs: 'requestMentor'
       })
 
+      .when('/mentors-online', {
+        templateUrl: 'views/mentors-online.html',
+        controller: 'MentorsOnlineCtrl',
+        controllerAs: 'mentorsOnline'
+      })
       .otherwise({
         redirectTo: '/'
       });

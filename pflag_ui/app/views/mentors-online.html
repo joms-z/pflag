@@ -1,0 +1,14 @@
+<div class="container-fluid">
+	<div class="panel panel-success">
+		<div class="panel-heading">Panel heading</div>
+		<div class="list-group">
+			<a ng-repeat="mentor in mentors" href="#/chat" class="list-group-item">
+				<h5 class="list-group-item-heading">{{ mentor.username }}</h5>
+				<p>{{ mentor.profile.bio }}</p>
+			</a>
+		</div>
+	</div>
+	<div class="col-xs-12 text-center">
+		<button class="btn btn-hg btn-wide btn-primary-outline">Message Anyone</button>
+	</div>
+</div>
