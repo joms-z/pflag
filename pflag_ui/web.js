@@ -348,7 +348,7 @@ io.sockets.on('connection', function(socket) {
 		if(matched){
 			var volunteerSID = cvChatroom[socket.id];
 			socket.emit("new_chat",{ with: sessions[volunteerSID].name });
-			sessions[volunteerSID].socket.emit("new_chat",{ with: data.name });
+			sessions[volunteerSID].socket.emit("new_chat",{ with: sessions[volunteerSID].name });
 		}
 		socket.emit('isMatch', { isMatch: matched });
 		printState();

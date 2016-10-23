@@ -112,4 +112,9 @@ angular.module('pflagUiApp')
 		}
 
 		$scope.historicalChats = [];
+
+		$scope.$on("$destroy", function() {
+			socketio.disconnect();
+			socketio = null;
+		});
   }]);
