@@ -19,9 +19,9 @@ angular.module('pflagUiApp')
   			password: $scope.password
   		};
 
-  		$http.post('/login', data).success(function (data, status) {
+  		$http.post('http://localhost:5000/login', data).success(function (data, status) {
     		console.log('Logged in successfully');
-            $location.path('/chat');
+            $location.path('/choose');
     	}).error(function (data, status) {
     		console.log('FAILED WITH DATA: ' + data + ' STATUS: ' + status);
     	});
