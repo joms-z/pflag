@@ -84,12 +84,19 @@ angular
         controller: 'CallCtrl',
         controllerAs: 'call'
       })
+      .when('/request-mentor', {
+        templateUrl: 'views/request-mentor.html',
+        controller: 'RequestMentorCtrl',
+        controllerAs: 'requestMentor'
+      })
 
       .otherwise({
         redirectTo: '/'
       });
   })
   .controller('PFlagCtrl', [ '$scope', '$location', function ($scope, $location) {
-    
+    $scope.isMentor = false;
+    $scope.isLoggedIn = false;
+    $scope.username = 'anonymous';
   }
 ]);

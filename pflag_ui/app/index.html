@@ -37,10 +37,16 @@
             <a class="navbar-brand" href="#/">ReachOut</a>
           </div>
           <div class="collapse navbar-collapse" id="js-navbar-collapse">
-              <ul class="nav navbar-nav navbar-right">
+              <ul ng-if="isLoggedIn" class="nav navbar-nav navbar-right">
                 <li><a href="#/msg">Messages<span class="navbar-new">3</span></a></li>
-                <li><a href="#/profile">My Profile</a></li>
-               </ul>
+                <li>
+                  <a ng-if="isMentor" href="#/profile">My Profile</a>
+                  <a ng-if="!isMentor" href="#/request-mentor">Become a Mentor</a>
+                </li>
+              </ul>
+              <ul ng-if="!isLoggedIn" class="nav navbar-nav navbar-right">
+                <li><a href="#/login">Login</a></li>
+              </ul>
             </div>
         </div>
       </div>
@@ -96,6 +102,7 @@
         <script src="scripts/controllers/sorry.js"></script>
         <script src="scripts/controllers/trying.js"></script>
         <script src="scripts/controllers/call.js"></script>
+        <script src="scripts/controllers/request-mentor.js"></script>
         <!-- endbuild -->
 
         <script src="scripts/socket.io-1.4.5.js"></script>
