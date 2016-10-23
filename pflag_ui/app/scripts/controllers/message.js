@@ -7,7 +7,9 @@
  * # MessageCtrl
  * Controller of the pflagUiApp
  */
+
+
 angular.module('pflagUiApp')
   .controller('MessageCtrl', function () {
-    
+
   });

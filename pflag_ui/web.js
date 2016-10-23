@@ -1,10 +1,13 @@
+var http = require('http');
 var express = require('express');
 var bodyParser = require('body-parser');
-var app = express();
+var app = module.exports.app = express();
+var server = http.createServer(app)
+var io = require('socket.io').listen(server);
 var mongo = require('mongodb');
 var monk = require('monk');
 var db = monk('localhost:27017/nodetest1');
-var client = require('twilio')('SKb4e44aff7b2dbdd3b365540ff6e6de07', 'y3cm6mRo08WYelAYZXCU8Dn3DPA8Jzxg');
+var client = require('twilio')('ACff6b309d15810713b71ff296e6bf3b4b', '19fd6d6aa85e8f9f12525c1c5379f52e');
 
 app.use(bodyParser.urlencoded({extended: false }));
 app.use(bodyParser.json());
@@ -25,24 +28,27 @@ app.post('/login', function (req, res) {
 });
 
 app.post('/call',function(req,res) {
+	var call = {
+		fourPeople: 'https://handler.twilio.com/twiml/EH1c35e24a50f16aa314612dd11ac296d4' // Arvind, Joms, Jackie, Christine
+	};
 	
 	client.makeCall({
 
 		to:'+14166185534', // Any number Twilio can call
 		from: '+16475034795', // A number you bought from Twilio and can use for outbound communication
-		url: '/call/app1' // A URL that produces an XML document (TwiML) which contains instructions for the call
+		url: call.fourPeople // A URL that produces an XML document (TwiML) which contains instructions for the call
 
 	}, function(err, responseData) {
 
-		//executed when the call has been initiated.
-		console.log(responseData.from); // outputs "+14506667788"
+		if(err == null){
+			console.log(err);
+			res.send(err);
+		}else{ //executed when the call has been initiated.
+			console.log(responseData.status); // should be queued
+			res.send(responseData);
+		}
 
 	});
-});
-
-app.get('/call/app1',function(req,res){
-	res.set('Content-Type', 'text/xml');
-	res.send(xml('<Response><Message>Hello from Pato!</Message></Response>'));
 });
 
 app.post('/sendChat', function (req, res) {
@@ -93,4 +99,120 @@ app.get('/loadChats', function (req, res) {
 	});
 });
 
-app.listen(process.env.PORT || 5000);
+
+
+
+
+var sessions = [];
+var vcChatroom = []; // volunteer -> client chatroom
+var cvChatroom = [];// volunteer -> client chatroom
+var volunteerQueue = [];
+var clientQueue = [];
+
+function findVolunteer(clientID){
+	while(Object.keys(volunteerQueue).length > 0){
+		var volunteerID = Object.keys(volunteerQueue)[0];
+		delete volunteerQueue[volunteerID];
+		var session = sessions[volunteerID];
+		if(session && session.socket && session.socket.connected){
+			createChatroom(volunteerID,clientID);
+			delete clientQueue[clientID];
+			return true;
+		}else{
+			deleteSession(volunteerID);
+		}
+	}
+	return false;
+}
+
+function createChatroom(volunteerID,clientID){
+	vcChatroom[volunteerID] = clientID;
+	cvChatroom[clientID] = volunteerID;
+}
+
+function getRespondSocket(socketID, isVolunteer){
+	var correspondingID = (isVolunteer)? vcChatroom[socketID] : cvChatroom[socketID];
+	var session = sessions[correspondingID];
+
+	if(session){
+		return session.socket;
+	}else{
+		deleteChatroom(socketID);
+		return false;
+	}
+}
+
+function deleteChatroom(SID, isVolunteer){
+	if(isVolunteer){
+		var volunteerSID = SID;
+		var clientSID = vcChatroom[volunteerSID];
+		delete vcChatroom[volunteerSID];
+		delete cvChatroom[clientSID];
+		delete volunteerQueue[volunteerSID];
+	}else{
+		var clientSID = SID;
+		var volunteerSID = cvChatroom[clientSID];
+		if(volunteerSID){
+			volunteerQueue[volunteerSID] = volunteerSID;
+		}
+		delete vcChatroom[volunteerSID];
+		delete cvChatroom[clientSID];
+		delete clientQueue[clientID];
+	}
+}
+
+function deleteSession(SID){
+	var session = sessions[SID];
+	try{
+		deleteChatroom(SID, session.isVolunteer);
+	}catch(e){}
+	delete sessions[SID];
+	printState();
+}
+
+function printState(){
+	console.log("**");
+	console.log("sessions", Object.keys(sessions));
+	console.log("v-queue", volunteerQueue);
+	console.log("c-queue", clientQueue);
+	console.log("vc", vcChatroom);
+	console.log("cv",cvChatroom);
+	console.log("**");
+}
+
+io.sockets.on('connection', function(socket) {
+	var isVolunteer = socket.handshake.query.v;
+	
+	if(isVolunteer == '1'){
+		sessions[socket.id] = {
+			socket: socket,
+			isVolunteer: true,// 1 = volunteer, 0: client
+		};
+		volunteerQueue[socket.id] = socket.id;
+	}else{
+		sessions[socket.id] = {
+			socket: socket,
+			isVolunteer: false,// 1 = volunteer, 0: client
+		};
+		clientQueue[socket.id] = socket.id;
+		var wasFound = findVolunteer(socket.id);
+	}
+
+	printState();
+	
+
+	socket.on('disconnect', function () {
+		console.log(socket.id + " disconnected");
+		deleteSession(socket.id);
+	});
+
+    socket.on('message', function(data) {
+		var session = sessions[socket.id];
+		var respondSocket = getRespondSocket(socket.id,session.isVolunteer);
+        respondSocket.emit("message_received",{ message: data });
+		console.log(data);
+    });
+});
+
+server.listen(process.env.PORT || 5000);
+
