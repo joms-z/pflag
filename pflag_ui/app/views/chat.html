@@ -11,7 +11,7 @@
         <ul class="messages list-unstyled">
             <li class="message appeared" ng-repeat="msg in historicalChats" ng-class="{'left': msg.name == name, 'right' : msg.name !=name, 'new-chat': msg.simple }">
                 <span ng-if="!msg.simple">
-                    <div class="avatar">{{msg.name}}</div>
+                    <div class="avatar"><div class="avatar-string">{{msg.name}}</div></div>
                     <div class="text_wrapper">
                         <div class="text">{{ msg.message }}</div>
                     </div>
