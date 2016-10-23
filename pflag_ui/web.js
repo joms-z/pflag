@@ -23,7 +23,14 @@ app.post('/login', function (req, res) {
   var username = req.body.username;
   var password = req.body.password; //TODO: Encryption
   //TODO: Retrieve data and validate
-  res.end("sent");
+  var collection = db.get('usertable');
+  //TODO: Enforce constraint of only one user with one username
+  var userdetails = collection.findOne({"username": username, 
+                                        "password": password})
+  if (username===userdetails["username"] && password===userdetails["password"])
+      res.end("sent");
+  else
+	  res.send("Login failed!")
 
 });
 
