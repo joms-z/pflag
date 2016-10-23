@@ -83,5 +83,12 @@
           font-size: 18px;
           font-weight: 300;
         }
+
+        .message.new-chat{
+          color: grey;
+          opacity: 100% !important;
+          font-size: 0.7em;
+          text-align: center;
+        }
     }
 }

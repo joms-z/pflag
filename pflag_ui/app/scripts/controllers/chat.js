@@ -33,15 +33,17 @@ function poll(fn, timeout, interval) {
 }
 
 angular.module('pflagUiApp')
-  .controller('ChatCtrl', ['$scope', '$http', function ($scope, $http) {
+  .controller('ChatCtrl', ['$scope', '$http', '$document', function ($scope, $http, $document) {
     $scope.waitingForMentor = true;
 		var socketio = null;
 		$scope.name = prompt("Your name?");
 		var nameLower = ($scope.name) ? $scope.name.toLowerCase() : null;
+		$scope.isVolunteer = false;
 
 		if( nameLower == "doe" || nameLower == "jackie" || nameLower == "joms" || nameLower == "christine" || nameLower == "arvind" || nameLower == "pato" || nameLower == "pi" ){
+			$scope.isVolunteer = true;
 			var waitingForClient = true;
-			socketio = io.connect("localhost:5000", {query: 'v='+1});
+			socketio = io.connect("localhost:5000", {query: 'v='+1+'&name='+$scope.name});
 			$scope.waitingForMentor = false;
 		}else{
 			if(!$scope.name){
@@ -50,7 +52,7 @@ angular.module('pflagUiApp')
 
 			socketio = io.connect("localhost:5000", {query: 'v='+0});
 
-			socketio.emit("isMatch",{});
+			socketio.emit("isMatch",{ name:$scope.name });
 
 			socketio.on("isMatch", function(data) {
 				if(!data.isMatch){
@@ -74,6 +76,15 @@ angular.module('pflagUiApp')
 
     socketio.on("message_received", function(data) {
         $scope.historicalChats.push(data);
+				$scope.$digest();
+    });
+
+		socketio.on("new_chat", function(data) {
+				$scope.historicalChats.push({ 
+					message : data.with,
+					name: $scope.name,
+					simple: true
+				});
 				$scope.$digest();
     });
 
