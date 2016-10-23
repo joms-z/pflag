@@ -99,7 +99,6 @@ app.post('/save-profile', function (req, res) {
 app.get('/get-mentors', function (req, res) {
 	//TODO: Retrieve data and validate
 	var collection = db.get('usertable');
-	console.log('he')
 
 	collection.find({ "isMentor": true }, function(err, mentors) {
 		if(err) {
