@@ -11,7 +11,7 @@ angular.module('pflagUiApp')
   .controller('TryingCtrl',['$location', '$timeout', function ($location, $timeout) {
     (function () {
         $timeout(function() {
-            $location.path('/no_one');
+            $location.path('/sorry');
         }, 3000);
     })();
   }]);
